@@ -11,22 +11,21 @@ List will have SortBar
 
 export default class List extends Component {
 
+  // TODO: fix styling on input field on focus
   // TODO: Expand search box on focus
   render() {
     return (
       <Container>
-        <Row style={styles.searchField}>
+        <Row style={styles.searchRow}>
           <Col md={3}>
-            <InputGroup id="searchFieldInput">
-              <InputGroupAddon id="searchFieldIcon">
-                <i className="fa fa-search" aria-hidden="true"></i>
-              </InputGroupAddon>
-              <Input placeholder="Search..." />
-            </InputGroup>
+            <div style={styles.searchContainer} >
+              <Col md={1} > <i className="fa fa-search" aria-hidden="true"></i></Col>
+              <Col ><input type="text" placeholder="Search..." style={styles.searchField}/></Col>
+            </div>
           </Col>
         </Row>
         <Row style={styles.filterBar}>
-          <Col md={1}>
+          <Col md={1} style={styles.filterBarCheckbox} >
             <input type="checkbox" />
           </Col>
           <Col md={6}> Name </Col>
@@ -50,9 +49,18 @@ export default class List extends Component {
 }
 
 const styles = {
-  searchField: {
+  searchRow: {
     backgroundColor: 'white',
     marginBottom: 20
+  },
+  searchContainer: {
+    border: '1px solid #DCDCDC',
+    borderRadius: 3,
+    // paddingLeft: 15
+  },
+  searchField: {
+    border: 0,
+    marginLeft: 10
   },
   textAlignRightColumn: {
     textAlign: 'right'
@@ -63,6 +71,9 @@ const styles = {
     borderBottomStyle: 'solid',
     borderBottomColor: '#E8E8E8',
     paddingBottom: 10
+  },
+  filterBarCheckbox: {
+    textAlign: 'right'
   }
 }
 

@@ -19,7 +19,7 @@ export default class ListItem extends Component {
     const { id, name, type, price, inventory, thumbnail } = itemData;
     return (
       <Row style={styles.rowEntry}>
-        <Col md={1}> <input type="checkbox" /> </Col>
+        <Col md={1} style={styles.itemCheckbox}> <input type="checkbox" /> </Col>
         <Col md={1}> <img src={thumbnail} style={styles.itemThumbnail}/> </Col>
         <Col md={5} style={styles.itemNameColumn}> {name} </Col>
         <Col md={2}> {type} </Col>
@@ -38,8 +38,12 @@ const styles = {
     paddingBottom: 10,
     paddingTop: 10
   },
+  itemCheckbox: {
+    textAlign: 'right'
+  },
   itemNameColumn: {
-    paddingLeft: 0
+    paddingLeft: 0,
+    paddingTop: 5
   },
   itemThumbnail: {
     border: '1px solid #DCDCDC'
