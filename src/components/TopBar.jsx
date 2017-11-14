@@ -19,5 +19,6 @@ export default class TopBar extends Component {
 }
 
 const styles = {
-  fontSize: 20
+  fontSize: 25,
+  marginBottom: 30
 };
