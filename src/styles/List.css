@@ -1,0 +1,9 @@
+#searchFieldIcon {
+  background-color: white;
+  width: 40px;
+  padding-left: 20px;
+}
+
+#searchFieldInput {
+  border-left: 0;
+}
