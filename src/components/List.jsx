@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import ListItem from './ListItem';
+import FilterBar from './FilterBar';
+import SearchInput from './SearchInput';
 import '../styles/List.css';
 
 /*
@@ -12,29 +14,40 @@ List will set number of items visible
 
 export default class List extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       displayItems: 10,
       currentPage: 1,
-      search: false,
+      search: false, // search cb will change this to be a filtered list of itemData
       itemsDataList: mockDataList
     }
   }
 
-  createListItems = itemDataList => {
-    const { displayItems, currentPage } = this.state;
+  // Search
+  updateListWithSearchResults = searchResults => {
+    this.setState({
+      search: searchResults
+    });
+  }
+
+  // Displaying Item Rows
+  createListItems = () => {
+    const { displayItems, currentPage, search, itemsDataList } = this.state;
     let result = [];
+    const list = search ? search : itemsDataList
+
     // TODO: Test for edge case if at the end of the list
-    const startIndex = displayItems * (currentPage -1 );
-    const truncatedList = itemDataList.slice(startIndex);
+    const startIndex = displayItems * (currentPage - 1);
+    const truncatedList = list.slice(startIndex);
     const limit = displayItems < truncatedList.length ? displayItems : truncatedList.length; // in the case that we have less or more items than the limit
-    for(let i = 0; i < limit; i++) {
+    for (let i = 0; i < limit; i++) {
       result.push(<ListItem itemData={truncatedList[i]} />);
     }
     return result;
   }
 
+  // Pagination
   displayNItems = event => {
     this.setState({
       displayItems: parseInt(event.target.value, 10),
@@ -51,8 +64,9 @@ export default class List extends Component {
   buildPageSelector = (numberOfPages) => {
     const { currentPage } = this.state;
     let options = [];
-    for(let i = 1; i <= numberOfPages; i++) {
-      if(i === currentPage) {
+
+    for (let i = 1; i <= numberOfPages; i++) {
+      if (i === currentPage) {
         options.push(<option key={`${i}_page`} value={i} selected>{i}</option>);
       } else {
         options.push(<option key={`${i}_page`} value={i}>{i}</option>)
@@ -61,7 +75,7 @@ export default class List extends Component {
 
     return (
       <select onChange={this.displayPage} defaultValue={currentPage}>
-        { options }
+        {options}
       </select>
     );
   }
@@ -69,34 +83,37 @@ export default class List extends Component {
   // TODO: fix styling on input field on focus
   // TODO: Expand search box on focus
   render() {
-    const { currentPage, displayItems, itemsDataList } = this.state;
+    const { displayItems, itemsDataList, search } = this.state;
     const pages = itemsDataList.length / displayItems;
     let numberOfPages = itemsDataList % displayItems !== 0 ? Math.floor(pages) + 1 : pages;
-    
+
     // Search will filter or override this array
     // listItems = search ? createListItems(filtered itemArray) : createListItems(itemArray)
-    let listItems = this.createListItems(itemsDataList);
+    let listItems = this.createListItems();
 
+    console.log(`list.jsx search: ${search}`)
     return (
       <Container>
         <Row style={styles.searchRow}>
           <Col md={3}>
-            <div style={styles.searchContainer} >
+            <SearchInput search={search} itemsDataList={itemsDataList} searchCallback={this.updateListWithSearchResults} />
+            {/* <div style={styles.searchContainer} >
               <Col md={1} > <i className="fa fa-search" aria-hidden="true"></i></Col>
               <Col ><input onChange={this.handleSearch} type="text" placeholder="Search..." style={styles.searchField} /></Col>
-            </div>
+            </div> */}
           </Col>
         </Row>
         <Row style={styles.filterBar}>
-          <Col md={1} style={styles.filterBarCheckbox} >
+          <FilterBar />
+          {/* <Col md={1} style={styles.filterBarCheckbox} >
             <input type="checkbox" />
           </Col>
           <Col md={6}> Name </Col>
           <Col md={2}> Type </Col>
           <Col md={1} style={styles.textAlignRightColumn}> Price </Col>
-          <Col md={2} style={styles.textAlignRightColumn}> Inventory </Col>
+          <Col md={2} style={styles.textAlignRightColumn}> Inventory </Col> */}
         </Row>
-        { listItems }
+        {listItems}
         <Row style={styles.paginationRow}>
           {/* <PaginationBar /> */}
           <Col md={7}>
@@ -112,10 +129,10 @@ export default class List extends Component {
             </Col>
           </Col>
           <Col md={5} style={styles.textAlignRightColumn}>
-          {/* <button> <i class="fa fa-angle-left" aria-hidden="true"></i></button> */}
-          { this.buildPageSelector(numberOfPages) }
-          {/* <button><i class="fa fa-angle-right" aria-hidden="true"></i></button> */}
-        </Col>
+            {/* <button> <i class="fa fa-angle-left" aria-hidden="true"></i></button> */}
+            {this.buildPageSelector(numberOfPages)}
+            {/* <button><i class="fa fa-angle-right" aria-hidden="true"></i></button> */}
+          </Col>
         </Row>
       </Container>
     );
