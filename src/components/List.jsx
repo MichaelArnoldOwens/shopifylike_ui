@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import ListItem from './ListItem';
-import SortBar from './FilterBar';
+import SortBar from './SortBar';
 import SearchInput from './SearchInput';
 import '../styles/List.css';
 
@@ -20,7 +20,8 @@ export default class List extends Component {
       displayItems: 10,
       currentPage: 1,
       search: false, // search cb will change this to be a filtered list of itemData
-      itemsDataList: mockDataList
+      itemsDataList: mockDataList,
+      sortedList: false
     }
   }
 
@@ -28,15 +29,27 @@ export default class List extends Component {
   updateListWithSearchResults = searchResults => {
     this.setState({
       search: searchResults,
-      currentPage: 1
+      currentPage: 1,
+      sortedList: false
+    });
+  }
+
+  // Filter
+  applySort = sortedList => {
+    // SortBar will get either the original product list or search results
+    this.setState({
+      sortedList: sortedList
     });
   }
 
   // Displaying Item Rows
   createListItems = () => {
-    const { displayItems, currentPage, search, itemsDataList } = this.state;
+    const { displayItems, currentPage, search, itemsDataList, sortedList } = this.state;
     let result = [];
-    const list = search ? search : itemsDataList
+    // sortedList > search > itemsDataList
+    // check for sortedList here
+    // const list = search ? search : itemsDataList;
+    const list = sortedList ? sortedList : (search ? search : itemsDataList);
 
     // TODO: Test for edge case if at the end of the list
     const startIndex = displayItems * (currentPage - 1);
@@ -45,6 +58,7 @@ export default class List extends Component {
     for (let i = 0; i < limit; i++) {
       result.push(<ListItem itemData={truncatedList[i]} />);
     }
+
     return result;
   }
 
@@ -91,29 +105,20 @@ export default class List extends Component {
 
     // Search will filter or override this array
     // listItems = search ? createListItems(filtered itemArray) : createListItems(itemArray)
-    const listItems = this.createListItems();
 
     console.log(`list.jsx search: ${search}`)
     return (
       <Container>
         <Row style={styles.searchRow}>
           <Col md={3}>
-            <SearchInput search={search} itemsDataList={itemsDataList} searchCallback={this.updateListWithSearchResults} />
+            <SearchInput search={search} list={itemsDataList} searchCallback={this.updateListWithSearchResults} />
           </Col>
         </Row>
-        <Row style={styles.filterBar}>
-          <SortBar filterCallback={this.applyFilter} />
-          {/* <Col md={1} style={styles.filterBarCheckbox} >
-            <input type="checkbox" />
-          </Col>
-          <Col md={6}> Name </Col>
-          <Col md={2}> Type </Col>
-          <Col md={1} style={styles.textAlignRightColumn}> Price </Col>
-          <Col md={2} style={styles.textAlignRightColumn}> Inventory </Col> */}
+        <Row style={styles.sortBar}>
+          <SortBar list={list} sortCallback={this.applySort} />
         </Row>
-        {listItems}
+        { this.createListItems() }
         <Row style={styles.paginationRow}>
-          {/* <PaginationBar /> */}
           <Col md={7}>
             <Col md={3}>
               Items per Page:
@@ -138,15 +143,12 @@ export default class List extends Component {
 }
 
 const styles = {
-  filterBar: {
+  sortBar: {
     fontWeight: 'bold',
     borderBottomWidth: 1,
     borderBottomStyle: 'solid',
     borderBottomColor: '#E8E8E8',
     paddingBottom: 10
-  },
-  filterBarCheckbox: {
-    textAlign: 'right'
   },
   searchRow: {
     backgroundColor: 'white',
@@ -167,7 +169,7 @@ const mockDataList = [
     "name": "Snapback Hat",
     "type": "Physical",
     "price": 20.99,
-    "inventory": 12,
+    "inventory": 0,
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/diamond-supply-co-brilliant-snapback-hat-224298.png"
   },
   {
@@ -353,5 +355,29 @@ const mockDataList = [
     "price": 80.8,
     "inventory": 4,
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/11708126.png"
+  },
+  {
+    "id": 2,
+    "name": "Maxi Dress - Floral",
+    "type": "Physical",
+    "price": 40,
+    "inventory": 24,
+    "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
+  },
+  {
+    "id": 2,
+    "name": "Maxi Dress - Floral",
+    "type": "Physical",
+    "price": 40,
+    "inventory": 24,
+    "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
+  },
+  {
+    "id": 2,
+    "name": "Maxi Dress - Floral",
+    "type": "Physical",
+    "price": 40,
+    "inventory": 24,
+    "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
   }
 ];

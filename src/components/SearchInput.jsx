@@ -28,7 +28,7 @@ export default class SearchInput extends Component {
   }
 
   handleSearch = event => {
-    const { search, itemsDataList, searchCallback } = this.props;
+    const { search, list, searchCallback } = this.props;
     const { value } = event.target;
 
     if (value === '' && search) {
@@ -36,12 +36,16 @@ export default class SearchInput extends Component {
     } else {
       let results = [];
       const isFirstCharDollarSymbol = value.charAt(0) === '$';
+      if(isFirstCharDollarSymbol && value.length === 1) {
+        return searchCallback(list);
+      }
+
       const priceSearchFlag = this.isValidPriceInput(value, isFirstCharDollarSymbol);
       
-      itemsDataList.map(item => {
+      list.map(item => {
         if (priceSearchFlag) {
           const priceValue = isFirstCharDollarSymbol ? value.slice(1) : value;
-          if (parseFloat(priceValue, 10) >= item.price) {
+          if (parseFloat(priceValue, 10) === item.price) {
             results.push(item);
           }
         } else {
