@@ -182,7 +182,7 @@ const mockDataList = [
   {
     "id": 3,
     "name": "Maxi Dress - Vibrant",
-    "type": "Physical",
+    "type": "APhysical",
     "price": 40,
     "inventory": 17,
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
@@ -214,7 +214,7 @@ const mockDataList = [
   {
     "id": 7,
     "name": "Ribbed V-Neck Sweater",
-    "type": "Physical",
+    "type": "BPhysical",
     "price": 52.5,
     "inventory": 8,
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/11718685.png"
@@ -254,7 +254,7 @@ const mockDataList = [
   {
     "id": 12,
     "name": "Denim Jacket",
-    "type": "Physical",
+    "type": "CPhysical",
     "price": 80.8,
     "inventory": 4,
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/11708126.png"
@@ -374,7 +374,7 @@ const mockDataList = [
   {
     "id": 2,
     "name": "Maxi Dress - Floral",
-    "type": "Physical",
+    "type": "ZPhysical",
     "price": 40,
     "inventory": 24,
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
