@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import ListItem from './ListItem';
-import FilterBar from './FilterBar';
+import SortBar from './FilterBar';
 import SearchInput from './SearchInput';
 import '../styles/List.css';
 
@@ -27,7 +27,8 @@ export default class List extends Component {
   // Search
   updateListWithSearchResults = searchResults => {
     this.setState({
-      search: searchResults
+      search: searchResults,
+      currentPage: 1
     });
   }
 
@@ -98,14 +99,10 @@ export default class List extends Component {
         <Row style={styles.searchRow}>
           <Col md={3}>
             <SearchInput search={search} itemsDataList={itemsDataList} searchCallback={this.updateListWithSearchResults} />
-            {/* <div style={styles.searchContainer} >
-              <Col md={1} > <i className="fa fa-search" aria-hidden="true"></i></Col>
-              <Col ><input onChange={this.handleSearch} type="text" placeholder="Search..." style={styles.searchField} /></Col>
-            </div> */}
           </Col>
         </Row>
         <Row style={styles.filterBar}>
-          <FilterBar />
+          <SortBar filterCallback={this.applyFilter} />
           {/* <Col md={1} style={styles.filterBarCheckbox} >
             <input type="checkbox" />
           </Col>
@@ -154,15 +151,6 @@ const styles = {
   searchRow: {
     backgroundColor: 'white',
     marginBottom: 20
-  },
-  searchContainer: {
-    border: '1px solid #DCDCDC',
-    borderRadius: 3,
-    // paddingLeft: 15
-  },
-  searchField: {
-    border: 0,
-    marginLeft: 10
   },
   textAlignRightColumn: {
     textAlign: 'right'
