@@ -22,24 +22,29 @@ export default class List extends Component {
   }
 
   createListItems = itemDataList => {
-    const displayItemLimit = this.state.displayItems;
+    const { displayItems, currentPage } = this.state;
     let result = [];
-
-    const limit = displayItemLimit < itemDataList.length ? displayItemLimit : itemDataList.length;
+    // TODO: Test for edge case if at the end of the list
+    const startIndex = displayItems * (currentPage -1 );
+    const truncatedList = itemDataList.slice(startIndex);
+    const limit = displayItems < truncatedList.length ? displayItems : truncatedList.length; // in the case that we have less or more items than the limit
     for(let i = 0; i < limit; i++) {
-      result.push(<ListItem itemData={itemDataList[i]} />);
+      result.push(<ListItem itemData={truncatedList[i]} />);
     }
     return result;
   }
 
   displayNItems = event => {
     this.setState({
-      displayItems: parseInt(event.target.value)
+      displayItems: parseInt(event.target.value),
+      currentPage: 1 // TODO: clarify whether this is expected behavior
     })
   }
 
   displayPage = event => {
-    console.log(event)
+    this.setState({
+      currentPage: parseInt(event.target.value)
+    });
   }
 
   buildPageSelector = (currentPage, numberOfPages) => {
@@ -47,7 +52,7 @@ export default class List extends Component {
     for(let i = 1; i <= numberOfPages; i++) {
       options.push(<option value={i}>{i}</option>)
     }
-    console.log(options)
+
     return (
       <select onChange={this.displayPage} defaultValue={currentPage}>
         { options }
@@ -61,7 +66,6 @@ export default class List extends Component {
     const { currentPage, displayItems } = this.state;
     const pages = mockDataList.length / displayItems;
     let numberOfPages = mockDataList % displayItems !== 0 ? pages + 1 : pages;
-    console.log(mockDataList.length)
 
 
     return (
