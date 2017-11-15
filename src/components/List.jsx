@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import ListItem from './ListItem';
-import PaginationBar from './PaginationBar';
 import '../styles/List.css';
 
 /*
@@ -17,7 +16,9 @@ export default class List extends Component {
     super(props);
     this.state = {
       displayItems: 10,
-      currentPage: 1
+      currentPage: 1,
+      search: false,
+      itemsDataList: mockDataList
     }
   }
 
@@ -36,21 +37,26 @@ export default class List extends Component {
 
   displayNItems = event => {
     this.setState({
-      displayItems: parseInt(event.target.value),
-      currentPage: 1 // TODO: clarify whether this is expected behavior
-    })
+      displayItems: parseInt(event.target.value, 10),
+      currentPage: 1
+    });
   }
 
   displayPage = event => {
     this.setState({
-      currentPage: parseInt(event.target.value)
+      currentPage: parseInt(event.target.value, 10)
     });
   }
 
-  buildPageSelector = (currentPage, numberOfPages) => {
+  buildPageSelector = (numberOfPages) => {
+    const { currentPage } = this.state;
     let options = [];
     for(let i = 1; i <= numberOfPages; i++) {
-      options.push(<option value={i}>{i}</option>)
+      if(i === currentPage) {
+        options.push(<option key={`${i}_page`} value={i} selected>{i}</option>);
+      } else {
+        options.push(<option key={`${i}_page`} value={i}>{i}</option>)
+      }
     }
 
     return (
@@ -63,10 +69,13 @@ export default class List extends Component {
   // TODO: fix styling on input field on focus
   // TODO: Expand search box on focus
   render() {
-    const { currentPage, displayItems } = this.state;
-    const pages = mockDataList.length / displayItems;
-    let numberOfPages = mockDataList % displayItems !== 0 ? pages + 1 : pages;
-
+    const { currentPage, displayItems, itemsDataList } = this.state;
+    const pages = itemsDataList.length / displayItems;
+    let numberOfPages = itemsDataList % displayItems !== 0 ? Math.floor(pages) + 1 : pages;
+    
+    // Search will filter or override this array
+    // listItems = search ? createListItems(filtered itemArray) : createListItems(itemArray)
+    let listItems = this.createListItems(itemsDataList);
 
     return (
       <Container>
@@ -74,7 +83,7 @@ export default class List extends Component {
           <Col md={3}>
             <div style={styles.searchContainer} >
               <Col md={1} > <i className="fa fa-search" aria-hidden="true"></i></Col>
-              <Col ><input type="text" placeholder="Search..." style={styles.searchField} /></Col>
+              <Col ><input onChange={this.handleSearch} type="text" placeholder="Search..." style={styles.searchField} /></Col>
             </div>
           </Col>
         </Row>
@@ -87,7 +96,7 @@ export default class List extends Component {
           <Col md={1} style={styles.textAlignRightColumn}> Price </Col>
           <Col md={2} style={styles.textAlignRightColumn}> Inventory </Col>
         </Row>
-        {this.createListItems(mockDataList)}
+        { listItems }
         <Row style={styles.paginationRow}>
           {/* <PaginationBar /> */}
           <Col md={7}>
@@ -104,7 +113,7 @@ export default class List extends Component {
           </Col>
           <Col md={5} style={styles.textAlignRightColumn}>
           {/* <button> <i class="fa fa-angle-left" aria-hidden="true"></i></button> */}
-          { this.buildPageSelector(currentPage, numberOfPages) }
+          { this.buildPageSelector(numberOfPages) }
           {/* <button><i class="fa fa-angle-right" aria-hidden="true"></i></button> */}
         </Col>
         </Row>
