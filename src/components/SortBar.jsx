@@ -12,27 +12,38 @@ export default class SortBar extends Component {
       inventory: 0
     }
   }
+
+  alphabeticalSort = (a, b) => {
+    const nameA = a.name.toUpperCase();
+    const nameB = b.name.toUpperCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  }
+
+  reverseAlphabeticalSort = (a, b) => {
+    const nameA = a.name.toUpperCase();
+    const nameB = b.name.toUpperCase();
+    if (nameA > nameB) {
+      return -1;
+    }
+    if (nameA < nameB) {
+      return 1;
+    }
+    return 0;
+  }
+
   sortByName = () => {
     // case insensitive sort
     const { name } = this.state;
     const { list, sortCallback } = this.props;
-    debugger;
     switch (name) {
       case 0:
-        console.log(list);
-        console.log('sorting')
-        let sortedList = list.sort((a, b) => {
-          const nameA = a.name.toUpperCase();
-          const nameB = b.name.toUpperCase();
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-          return 0;
-        });
-        sortCallback(sortedList);
+        sortCallback(list.slice().sort(this.alphabeticalSort));
         this.setState({
           name: 1,
           type: 0,
@@ -41,7 +52,7 @@ export default class SortBar extends Component {
         })
         break;
       case 1:
-
+        sortCallback(list.slice().sort(this.reverseAlphabeticalSort));
         this.setState({
           name: 2,
           type: 0,
@@ -50,7 +61,7 @@ export default class SortBar extends Component {
         });
         break;
       case 2:
-
+        sortCallback(list);
         this.setState({
           name: 0,
           type: 0,
@@ -59,27 +70,6 @@ export default class SortBar extends Component {
         });
         break;
     }
-  }
-
-  /*
-items.sort(function(a, b) {
-  var nameA = a.name.toUpperCase(); // ignore upper and lowercase
-  var nameB = b.name.toUpperCase(); // ignore upper and lowercase
-  if (nameA < nameB) {
-    return -1;
-  }
-  if (nameA > nameB) {
-    return 1;
-  }
-
-  // names must be equal
-  return 0;
-});
-*/
-
-
-  toggleNameSort = () => {
-
   }
 
   render() {
@@ -91,7 +81,7 @@ items.sort(function(a, b) {
             <input type="checkbox" />
           </Col>
           <Col md={6}> Name <button onClick={this.sortByName}><i class="fa fa-angle-down" aria-hidden="true"></i></button> </Col>
-          <Col md={2}> Type </Col>
+          <Col md={2} onClick={this.sortByName}> Type </Col>
           <Col md={1} style={textAlignRightColumn}> Price </Col>
           <Col md={2} style={textAlignRightColumn}> Inventory </Col>
         </Row>
