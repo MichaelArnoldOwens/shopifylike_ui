@@ -25,23 +25,46 @@ export default class SortBar extends Component {
     return 0;
   }
 
-  reverseAlphabeticalSort = (a, b) => {
-    const nameA = a.name.toUpperCase();
-    const nameB = b.name.toUpperCase();
-    if (nameA > nameB) {
-      return -1;
-    }
-    if (nameA < nameB) {
-      return 1;
-    }
-    return 0;
-  }
-
   sortByName = () => {
     // case insensitive sort
     const { name } = this.state;
     const { list, sortCallback } = this.props;
     switch (name) {
+      case 0:
+        sortCallback(list.slice().sort(this.alphabeticalSort));
+        this.setState({
+          name: 1,
+          type: 0,
+          price: 0,
+          inventory: 0
+        })
+        break;
+      case 1:
+        sortCallback(list.slice().sort(this.alphabeticalSort).reverse());
+        this.setState({
+          name: 2,
+          type: 0,
+          price: 0,
+          inventory: 0
+        });
+        break;
+      case 2:
+        sortCallback(list);
+        this.setState({
+          name: 0,
+          type: 0,
+          price: 0,
+          inventory: 0
+        });
+        break;
+    }
+  }
+
+  sortByType = () => {
+    // case insensitive sort
+    const { type } = this.state;
+    const { list, sortCallback } = this.props;
+    switch (type) {
       case 0:
         sortCallback(list.slice().sort(this.alphabeticalSort));
         this.setState({
@@ -74,6 +97,8 @@ export default class SortBar extends Component {
 
   render() {
     const { textAlignRightColumn } = styles;
+    const { name, type, price, inventory } = this.state;
+
     return (
       <Container>
         <Row>
@@ -81,12 +106,12 @@ export default class SortBar extends Component {
             <input type="checkbox" />
           </Col>
           <Col md={6}> Name <button onClick={this.sortByName}><i class="fa fa-angle-down" aria-hidden="true"></i></button> </Col>
-          <Col md={2} onClick={this.sortByName}> Type </Col>
+          <Col md={2} onClick={this.sortByType}> Type </Col>
           <Col md={1} style={textAlignRightColumn}> Price </Col>
           <Col md={2} style={textAlignRightColumn}> Inventory </Col>
         </Row>
       </Container>
-    )
+    );
   }
 }
 

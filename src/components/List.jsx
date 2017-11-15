@@ -106,7 +106,6 @@ export default class List extends Component {
     // Search will filter or override this array
     // listItems = search ? createListItems(filtered itemArray) : createListItems(itemArray)
 
-    console.log(`list.jsx search: ${search}`)
     return (
       <Container>
         <Row style={styles.searchRow}>
