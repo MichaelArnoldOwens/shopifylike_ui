@@ -16,31 +16,53 @@ export default class List extends Component {
   constructor(props){
     super(props);
     this.state = {
-      displayPages: 10
+      displayItems: 10,
+      currentPage: 1
     }
   }
 
   createListItems = itemDataList => {
-    const displayPageLimit = this.state.displayPages;
+    const displayItemLimit = this.state.displayItems;
     let result = [];
 
-    const limit = displayPageLimit < itemDataList.length ? displayPageLimit : itemDataList.length;
+    const limit = displayItemLimit < itemDataList.length ? displayItemLimit : itemDataList.length;
     for(let i = 0; i < limit; i++) {
-      console.log(i);
       result.push(<ListItem itemData={itemDataList[i]} />);
     }
     return result;
   }
 
-  displayNPages = event => {
+  displayNItems = event => {
     this.setState({
-      displayPages: parseInt(event.target.value)
+      displayItems: parseInt(event.target.value)
     })
+  }
+
+  displayPage = event => {
+    console.log(event)
+  }
+
+  buildPageSelector = (currentPage, numberOfPages) => {
+    let options = [];
+    for(let i = 1; i <= numberOfPages; i++) {
+      options.push(<option value={i}>{i}</option>)
+    }
+    console.log(options)
+    return (
+      <select onChange={this.displayPage} defaultValue={currentPage}>
+        { options }
+      </select>
+    );
   }
 
   // TODO: fix styling on input field on focus
   // TODO: Expand search box on focus
   render() {
+    const { currentPage, displayItems } = this.state;
+    const pages = mockDataList.length / displayItems;
+    let numberOfPages = mockDataList % displayItems !== 0 ? pages + 1 : pages;
+    console.log(mockDataList.length)
+
 
     return (
       <Container>
@@ -69,18 +91,18 @@ export default class List extends Component {
               Items per Page:
           </Col>
             <Col>
-              <select onChange={this.displayNPages} defaultValue="10">
+              <select onChange={this.displayNItems} defaultValue="10">
                 <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="15">15</option>
               </select>
             </Col>
           </Col>
-          {/* <Col md={5} style={styles.textAlignRightColumn}>
-          <button> <i class="fa fa-angle-left" aria-hidden="true"></i></button>
-          <select /> <button><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-          <button><i class="fa fa-angle-right" aria-hidden="true"></i></button>
-        </Col> */}
+          <Col md={5} style={styles.textAlignRightColumn}>
+          {/* <button> <i class="fa fa-angle-left" aria-hidden="true"></i></button> */}
+          { this.buildPageSelector(currentPage, numberOfPages) }
+          {/* <button><i class="fa fa-angle-right" aria-hidden="true"></i></button> */}
+        </Col>
         </Row>
       </Container>
     );
