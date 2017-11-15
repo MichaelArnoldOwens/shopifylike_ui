@@ -17,8 +17,7 @@ export default class SearchInput extends Component {
   }
   */
 
-  isValidPriceInput(value) {
-    const isFirstCharDollarSymbol = value.charAt(0) === '$';
+  isValidPriceInput(value, isFirstCharDollarSymbol) {
     if (isFirstCharDollarSymbol || !isNaN(parseFloat(value.charAt(0), 10))) {
       const currencyAmount = isFirstCharDollarSymbol ? value.slice(0) : value;
       const regex = /^\$?[0-9]+\.?[0-9]?[0-9]?$/; // check if valid currency input
@@ -29,7 +28,6 @@ export default class SearchInput extends Component {
   }
 
   handleSearch = event => {
-    console.log('searchInput= ', event.target.value) // gets input of input field
     const { search, itemsDataList, searchCallback } = this.props;
     const { value } = event.target;
 
@@ -37,11 +35,13 @@ export default class SearchInput extends Component {
       searchCallback(false);
     } else {
       let results = [];
-      const priceSearchFlag = this.isValidPriceInput(value);
-
+      const isFirstCharDollarSymbol = value.charAt(0) === '$';
+      const priceSearchFlag = this.isValidPriceInput(value, isFirstCharDollarSymbol);
+      
       itemsDataList.map(item => {
         if (priceSearchFlag) {
-          if (parseFloat(value, 10) >= item.price) {
+          const priceValue = isFirstCharDollarSymbol ? value.slice(1) : value;
+          if (parseFloat(priceValue, 10) >= item.price) {
             results.push(item);
           }
         } else {

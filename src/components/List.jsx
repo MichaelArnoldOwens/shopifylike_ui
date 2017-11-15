@@ -84,12 +84,13 @@ export default class List extends Component {
   // TODO: Expand search box on focus
   render() {
     const { displayItems, itemsDataList, search } = this.state;
-    const pages = itemsDataList.length / displayItems;
-    let numberOfPages = itemsDataList % displayItems !== 0 ? Math.floor(pages) + 1 : pages;
+    const list = search ? search : itemsDataList;
+    const pages = list.length / displayItems;
+    const numberOfPages = list % displayItems !== 0 ? Math.floor(pages) + 1 : pages;
 
     // Search will filter or override this array
     // listItems = search ? createListItems(filtered itemArray) : createListItems(itemArray)
-    let listItems = this.createListItems();
+    const listItems = this.createListItems();
 
     console.log(`list.jsx search: ${search}`)
     return (
