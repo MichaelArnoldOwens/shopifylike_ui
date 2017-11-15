@@ -1,30 +1,33 @@
 import React, { Component } from 'react';
-import { Button, Container, Row, Col, InputGroup, InputGroupAddon, Input } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 
 /**
- * {
-    "id": 1,
-    "name": "Snapback Hat",
-    "type": "Physical",
-    "price": 20.99,
-    "inventory": 12,
-    "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/diamond-supply-co-brilliant-snapback-hat-224298.png"
-  }
+ * Selected = edit mode
  */
-
-
 export default class ListItem extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selected: this.props.selected ? true : false
+    }
+
+  }
   render() {
     const { itemData, checkboxCallback } = this.props;
     const { id, name, type, price, inventory, thumbnail } = itemData;
+    const { selected } = this.state;
+    const { selectedRowEntry, rowEntry, itemCheckbox, itemThumbnail, itemNameColumn, textAlignRightColumn } = styles;
+    const rowStyle = selected ? styles.selectedRowEntry : styles.rowEntry;
+
+    // TODO: add trailing zero to price when needed
     return (
-      <Row style={styles.rowEntry}>
-        <Col md={1} style={styles.itemCheckbox}> <input type="checkbox" /> </Col>
-        <Col md={1}> <img src={thumbnail} style={styles.itemThumbnail}/> </Col>
-        <Col md={5} style={styles.itemNameColumn}> {name} </Col>
+      <Row key={id} style={rowStyle}>
+        <Col md={1} style={itemCheckbox}> <input type="checkbox" /> </Col>
+        <Col md={1}> <img src={thumbnail} style={itemThumbnail}/> </Col>
+        <Col md={5} style={itemNameColumn}> {name} </Col>
         <Col md={2}> {type} </Col>
-        <Col md={1} style={styles.textAlignRightColumn}> ${price} </Col>
-        <Col md={2} style={styles.textAlignRightColumn}> {inventory} </Col>
+        <Col md={1} style={textAlignRightColumn}> ${price} </Col>
+        <Col md={2} style={textAlignRightColumn}> {inventory} </Col>
       </Row>
     );
   }
@@ -32,6 +35,14 @@ export default class ListItem extends Component {
 
 const styles = {
   rowEntry: {
+    borderBottomWidth: 1,
+    borderBottomStyle: 'solid',
+    borderBottomColor: '#E8E8E8',
+    paddingBottom: 10,
+    paddingTop: 10
+  },
+  selectedRowEntry: {
+    backgroundColor: '#F8F8F8',
     borderBottomWidth: 1,
     borderBottomStyle: 'solid',
     borderBottomColor: '#E8E8E8',
