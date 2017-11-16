@@ -1,205 +1,81 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 
+const SORT_TYPES = {
+  NONE: 'NONE',
+  ASCENDING: 'ASC',
+  DESCENDING: 'DESC'
+}
+
+const ITEM_PROPS = {
+  NAME: 'name',
+  TYPE: 'type',
+  PRICE: 'price',
+  INVENTORY: 'inventory'
+}
+
 export default class SortBar extends Component {
   constructor(props) {
     super(props);
-    // 0 - no sort applied, 1 - ascending , 2 - descending
     this.state = {
-      name: 0,
-      type: 0,
-      price: 0,
-      inventory: 0,
+      name: SORT_TYPES.NONE,
+      type: SORT_TYPES.NONE,
+      price: SORT_TYPES.NONE,
+      inventory: SORT_TYPES.NONE,
       selectAll: false
     }
   }
 
-  // TODO: refactor these
-  sortByName = () => {
-    const nameAlphabeticalSort = (a, b) => {
-      const nameA = a.name.toUpperCase();
-      const nameB = b.name.toUpperCase();
-      if (nameA < nameB) {
-        return -1;
+  sort = property => {
+    const sortGeneric = (property, a, b) => {
+      let valA = a[property];
+      let valB = b[property];
+      if (typeof a === 'string') {
+        valA = valA.toUpperCase()
+        valB = valB.toUpperCase()
       }
-      if (nameA > nameB) {
+      if (valA < valB) {
+        return -1
+      }
+      if (valA > valB) {
         return 1;
       }
       return 0;
     }
-    // case insensitive sort
-    const { name } = this.state;
-    const { list, sortCallback } = this.props;
-    switch (name) {
-      case 0:
-        sortCallback(list.slice().sort(nameAlphabeticalSort));
-        this.setState({
-          name: 1,
-          type: 0,
-          price: 0,
-          inventory: 0
-        })
-        break;
-      case 1:
-        sortCallback(list.slice().sort(nameAlphabeticalSort).reverse());
-        this.setState({
-          name: 2,
-          type: 0,
-          price: 0,
-          inventory: 0
-        });
-        break;
-      case 2:
-        sortCallback(list);
-        this.setState({
-          name: 0,
-          type: 0,
-          price: 0,
-          inventory: 0
-        });
-        break;
+
+    return () => {
+      const propertyStateValue = this.state[property];
+      const { list, sortCallback } = this.props;
+      let newState = {
+        name: SORT_TYPES.NONE,
+        type: SORT_TYPES.NONE,
+        price: SORT_TYPES.NONE,
+        inventory: SORT_TYPES.NONE
+      }
+
+      switch (propertyStateValue) {
+        case SORT_TYPES.NONE:
+          sortCallback(list.slice().sort((a, b) => sortGeneric(property, a, b)));
+          newState[property] = SORT_TYPES.ASCENDING;
+          this.setState(newState)
+          break;
+        case SORT_TYPES.ASCENDING:
+          sortCallback(list.slice().sort((a, b) => sortGeneric(property, a, b)).reverse());
+          newState[property] = SORT_TYPES.DESCENDING;
+          this.setState(newState)
+          break;
+        default:
+          sortCallback(list);
+          this.setState(newState)
+          break;
+      }
     }
   }
 
-  sortByType = () => {
-    // case insensitive sort
-    const typeAlphabeticalSort = (a, b) => {
-      const nameA = a.type.toUpperCase();
-      const nameB = b.type.toUpperCase();
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    }
-    const { type } = this.state;
-    const { list, sortCallback } = this.props;
-    switch (type) {
-      case 0:
-        sortCallback(list.slice().sort(typeAlphabeticalSort));
-        this.setState({
-          name: 0,
-          type: 1,
-          price: 0,
-          inventory: 0
-        })
-        break;
-      case 1:
-        sortCallback(list.slice().sort(typeAlphabeticalSort).reverse());
-        this.setState({
-          name: 0,
-          type: 2,
-          price: 0,
-          inventory: 0
-        });
-        break;
-      case 2:
-        sortCallback(list);
-        this.setState({
-          name: 0,
-          type: 0,
-          price: 0,
-          inventory: 0
-        });
-        break;
-    }
-  }
-
-  sortByPrice = () => {
-    // case insensitive sort
-    const priceSort = (a, b) => {
-      const nameA = a.price;
-      const nameB = b.price;
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    }
-    const { price } = this.state;
-    const { list, sortCallback } = this.props;
-
-    switch (price) {
-      case 0:
-        sortCallback(list.slice().sort(priceSort));
-        this.setState({
-          name: 0,
-          type: 0,
-          price: 1,
-          inventory: 0
-        })
-        break;
-      case 1:
-        sortCallback(list.slice().sort(priceSort).reverse());
-        this.setState({
-          name: 0,
-          type: 0,
-          price: 2,
-          inventory: 0
-        });
-        break;
-      case 2:
-        sortCallback(list);
-        this.setState({
-          name: 0,
-          type: 0,
-          price: 0,
-          inventory: 0
-        });
-        break;
-    }
-  }
-
-  sortByInventory = () => {
-    // case insensitive sort
-    const inventorySort = (a, b) => {
-      const nameA = a.inventory;
-      const nameB = b.inventory;
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    }
-    const { inventory } = this.state;
-    const { list, sortCallback } = this.props;
-
-    switch (inventory) {
-      case 0:
-        sortCallback(list.slice().sort(inventorySort));
-        this.setState({
-          name: 0,
-          type: 0,
-          price: 0,
-          inventory: 1
-        })
-        break;
-      case 1:
-        sortCallback(list.slice().sort(inventorySort).reverse());
-        this.setState({
-          name: 0,
-          type: 0,
-          price: 0,
-          inventory: 2
-        });
-        break;
-      case 2:
-        sortCallback(list);
-        this.setState({
-          name: 0,
-          type: 0,
-          price: 0,
-          inventory: 0
-        });
-        break;
-    }
-  }
+  sortByName = this.sort(ITEM_PROPS.NAME);
+  sortByType = this.sort(ITEM_PROPS.TYPE);
+  sortByPrice = this.sort(ITEM_PROPS.PRICE);
+  sortByInventory = this.sort(ITEM_PROPS.INVENTORY);
 
   handleSelectAll = () => {
     const { selectAllCallback } = this.props;
