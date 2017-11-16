@@ -31,7 +31,13 @@ export default class ListItem extends Component {
   handleEdit = event => {
     const { name, value } = event.target;
     let newState = {};
-    newState[name] = value;
+    if(name === 'currentPrice') {
+      newState[name] = parseFloat(value);
+    } else if(name === 'currentInventory') {
+      newState[name] = parseInt(value, 10);
+    } else {
+      newState[name] = value;
+    }
     this.setState(newState);
   }
 
