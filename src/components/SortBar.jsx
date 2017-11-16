@@ -14,6 +14,8 @@ const ITEM_PROPS = {
   INVENTORY: 'inventory'
 }
 
+// TODO: deselect selectAll if no items are selected
+
 export default class SortBar extends Component {
   constructor(props) {
     super(props);
@@ -80,11 +82,11 @@ export default class SortBar extends Component {
   handleSelectAll = () => {
     const { selectAllCallback } = this.props;
     const { selectAll } = this.state;
+    
     selectAllCallback(!selectAll);
     this.setState({ selectAll: !selectAll });
   }
 
-  // TODO: uncheck selectAll if no items are selected
   render() {
     const { textAlignRightColumn } = styles;
     const { selectAll } = this.state;

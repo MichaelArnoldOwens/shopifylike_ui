@@ -6,13 +6,11 @@ import SearchInput from './SearchInput';
 import '../styles/List.css';
 import { getItems, updateProduct } from '../services/apiService';
 
-/*
-List will take the product data and create instances of ProductItem components
-List will have search to filter through the product data
-List will have SortBar
-List will set number of items visible
-TODO: Change itemsDataList to dictionary
-*/
+
+// TODO: Change itemsDataList to dictionary - currently have to loop through the entire list every time i want to find an item
+// TODO: fix styling on input field on focus
+// TODO: Expand search box on focus
+
 
 export default class List extends Component {
   state = {
@@ -20,9 +18,7 @@ export default class List extends Component {
     currentPage: 1,
     search: false,
     sortedList: false,
-    itemsDataList: [],
-    selectAll: false,
-    selectedList: []
+    itemsDataList: []
   }
 
   componentWillMount() {
@@ -56,52 +52,19 @@ export default class List extends Component {
 
     // sortedList > search > itemsDataList
     const list = sortedList ? sortedList : (search ? search : itemsDataList);
-
-    // TODO: Test for edge case if at the end of the list
     const startIndex = displayItems * (currentPage - 1);
     const truncatedList = list.slice(startIndex);
     const limit = displayItems < truncatedList.length ? displayItems : truncatedList.length; // in the case that we have less or more items than the limit
+
     for (let i = 0; i < limit; i++) {
       result.push(<ListItem key={truncatedList[i].id} itemData={truncatedList[i]} checkboxCallback={this.handleListItemCheckbox} selected={truncatedList[i].selected} updateItemData={this.applyUpdateItemData} />);
     }
+
     return result;
   }
 
-  // Pagination
-  displayNItems = event => {
-    this.setState({
-      displayItems: parseInt(event.target.value, 10),
-      currentPage: 1
-    });
-  }
-
-  displayPage = event => {
-    this.setState({
-      currentPage: parseInt(event.target.value, 10)
-    });
-  }
-
-  buildPageSelector = (numberOfPages) => {
-    const { currentPage } = this.state;
-    let options = [];
-
-    for (let i = 1; i <= numberOfPages; i++) {
-      if (i === currentPage) {
-        options.push(<option key={`${i}_page`} value={i} selected>{i}</option>);
-      } else {
-        options.push(<option key={`${i}_page`} value={i}>{i}</option>)
-      }
-    }
-
-    return (
-      <select onChange={this.displayPage} defaultValue={currentPage}>
-        {options}
-      </select>
-    );
-  }
-
   // Editing
-  selectAllCallback = selectAll => {
+  applySelectAllCallback = selectAll => {
     const { itemsDataList } = this.state;
     const newItemsDataList = itemsDataList.map(item => {
       item.selected = selectAll;
@@ -138,7 +101,6 @@ export default class List extends Component {
     });
   }
 
-
   handleListItemCheckbox = (selected, id) => {
     const { itemsDataList } = this.state;
     const newItemsDataList = itemsDataList.map(item => {
@@ -153,10 +115,41 @@ export default class List extends Component {
     });
   }
 
-  // TODO: fix styling on input field on focus
-  // TODO: Expand search box on focus
+  // Pagination
+  displayNItems = event => {
+    this.setState({
+      displayItems: parseInt(event.target.value, 10),
+      currentPage: 1
+    });
+  }
+
+  displayPage = event => {
+    this.setState({
+      currentPage: parseInt(event.target.value, 10)
+    });
+  }
+
+  buildPageSelector = (numberOfPages) => {
+    const { currentPage } = this.state;
+    let options = [];
+
+    for (let i = 1; i <= numberOfPages; i++) {
+      if (i === currentPage) {
+        options.push(<option key={`${i}_page`} value={i} selected>{i}</option>);
+      } else {
+        options.push(<option key={`${i}_page`} value={i}>{i}</option>)
+      }
+    }
+
+    return (
+      <select onChange={this.displayPage} defaultValue={currentPage}>
+        {options}
+      </select>
+    );
+  }
+
   render() {
-    const { displayItems, itemsDataList, search, selectAll } = this.state;
+    const { displayItems, itemsDataList, search } = this.state;
     const list = search ? search : itemsDataList;
     const pages = list.length / displayItems;
     const numberOfPages = list % displayItems !== 0 ? Math.floor(pages) + 1 : pages;
@@ -169,7 +162,7 @@ export default class List extends Component {
           </Col>
         </Row>
         <Row style={styles.sortBar}>
-          <SortBar list={list} sortCallback={this.applySort} selectAllCallback={this.selectAllCallback} selectAll={selectAll} />
+          <SortBar list={list} sortCallback={this.applySort} selectAllCallback={this.applySelectAllCallback} />
         </Row>
         {this.createListItems()}
         <Row style={styles.paginationRow}>

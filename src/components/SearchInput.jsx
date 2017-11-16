@@ -3,16 +3,6 @@ import { Col } from 'reactstrap';
 import { isValidPriceInput } from '../services/validationService';
 
 export default class SearchInput extends Component {
-  /*
-  {
-    "id": 1,
-    "name": "Snapback Hat",
-    "type": "Physical",
-    "price": 20.99,
-    "inventory": 12,
-    "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/diamond-supply-co-brilliant-snapback-hat-224298.png"
-  }
-  */
 
   handleSearch = event => {
     const { search, list, searchCallback } = this.props;
@@ -23,12 +13,12 @@ export default class SearchInput extends Component {
     } else {
       let results = [];
       const isFirstCharDollarSymbol = value.charAt(0) === '$';
-      if(isFirstCharDollarSymbol && value.length === 1) {
+      if (isFirstCharDollarSymbol && value.length === 1) {
         return searchCallback(list);
       }
 
       const priceSearchFlag = isValidPriceInput(value, isFirstCharDollarSymbol);
-      
+
       list.forEach(item => {
         if (priceSearchFlag) {
           const priceValue = isFirstCharDollarSymbol ? value.slice(1) : value;
@@ -46,10 +36,12 @@ export default class SearchInput extends Component {
   }
 
   render() {
+    const { searchContainer, searchField } = styles;
+
     return (
-      <div style={styles.searchContainer} >
+      <div style={searchContainer} >
         <Col md={1} > <i className="fa fa-search" aria-hidden="true"></i></Col>
-        <Col ><input onChange={this.handleSearch} type="text" placeholder="Search..." style={styles.searchField} /></Col>
+        <Col ><input onChange={this.handleSearch} type="text" placeholder="Search..." style={searchField} /></Col>
       </div>
     )
   }

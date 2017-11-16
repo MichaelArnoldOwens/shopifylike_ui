@@ -3,10 +3,8 @@ import { Row, Col } from 'reactstrap';
 import { isEmpty } from 'lodash';
 import '../styles/ListItem.css';
 
-/**
- * Selected = edit mode
- * only state is for temporary edit
- */
+// TODO: add trailing zero to price when needed
+
 export default class ListItem extends Component {
   constructor(props) {
     super(props);
@@ -31,20 +29,22 @@ export default class ListItem extends Component {
   handleEdit = event => {
     const { name, value } = event.target;
     let newState = {};
-    if(name === 'currentPrice') {
+
+    if (name === 'currentPrice') {
       newState[name] = parseFloat(value);
-    } else if(name === 'currentInventory') {
+    } else if (name === 'currentInventory') {
       newState[name] = parseInt(value, 10);
     } else {
       newState[name] = value;
     }
+
     this.setState(newState);
   }
 
   isValidPrice = () => {
     const { currentPrice } = this.state;
     const regex = /\d+(\.\d{1,2})?$/;
-    if(regex.test(currentPrice)) {
+    if (regex.test(currentPrice)) {
       return true;
     }
     return false;
@@ -54,7 +54,7 @@ export default class ListItem extends Component {
     const { currentInventory } = this.state;
     // checks for integer
     const regex = /^[1-9]\d*$/;
-    if(regex.test(currentInventory)) {
+    if (regex.test(currentInventory)) {
       return true;
     }
     return false;
@@ -67,7 +67,7 @@ export default class ListItem extends Component {
     const { selectedRowEntry, rowEntry, itemThumbnail, itemNameColumn, textAlignRight, zeroInventory, editModePrice, editModeInventory, invalidInput } = styles;
     const rowStyle = selected ? selectedRowEntry : rowEntry;
     const inventoryColStyles = currentInventory > 0 ? textAlignRight : Object.assign({}, textAlignRight, zeroInventory);
-    
+
     const nameStyles = currentName.length === 0 ? invalidInput : {};
 
     const invalidPriceStyles = this.isValidPrice() ? false : true;
@@ -80,12 +80,11 @@ export default class ListItem extends Component {
     // if invalid current{prop}, then change border color to red and disable checkbox
     const isDisabled = (!isEmpty(nameStyles) || invalidPriceStyles || invalidInventoryStyles);
 
-    // TODO: add trailing zero to price when needed
     // Edit mode
     if (selected) {
       return (
         <Row key={itemData.id} style={rowStyle}>
-          <Col md={1} style={textAlignRight}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} disabled={isDisabled}/> </Col>
+          <Col md={1} style={textAlignRight}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} disabled={isDisabled} /> </Col>
           <Col md={1}> <img src={thumbnail} alt={currentName} style={itemThumbnail} /> </Col>
           <Col md={5} style={itemNameColumn}> <input type="text" style={nameStyles} value={currentName} onChange={this.handleEdit} name="currentName" /> </Col>
           <Col md={2}>
@@ -100,6 +99,7 @@ export default class ListItem extends Component {
         </Row>
       );
     }
+
     // Read mode
     return (
       <Row style={rowStyle}>
@@ -111,8 +111,6 @@ export default class ListItem extends Component {
         <Col md={2} style={inventoryColStyles}> {currentInventory} </Col>
       </Row>
     );
-
-
   }
 }
 
