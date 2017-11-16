@@ -18,7 +18,8 @@ export default class List extends Component {
     currentPage: 1,
     search: false,
     sortedList: false,
-    itemsDataList: []
+    itemsDataList: [],
+    disabledItems: []
   }
 
   componentWillMount() {
@@ -30,7 +31,7 @@ export default class List extends Component {
   }
 
   // Search
-  updateListWithSearchResults = searchResults => {
+  applyListWithSearchResults = searchResults => {
     this.setState({
       search: searchResults,
       currentPage: 1,
@@ -57,16 +58,39 @@ export default class List extends Component {
     const limit = displayItems < truncatedList.length ? displayItems : truncatedList.length; // in the case that we have less or more items than the limit
 
     for (let i = 0; i < limit; i++) {
-      result.push(<ListItem key={truncatedList[i].id} itemData={truncatedList[i]} checkboxCallback={this.handleListItemCheckbox} selected={truncatedList[i].selected} updateItemData={this.applyUpdateItemData} />);
+      result.push(<ListItem key={truncatedList[i].id} itemData={truncatedList[i]} checkboxCallback={this.applyListItemCheckbox} selected={truncatedList[i].selected} updateItemData={this.applyUpdateItemData} updateDisabledItems={this.applyDisabledItems} />);
     }
 
     return result;
   }
 
   // Editing
+  applyDisabledItems = (id, operation = 'add') => {
+    const { disabledItems } = this.state;
+    const itemIndex = disabledItems.indexOf(id);
+    let newDisabledItems;
+
+    if( operation === 'add' && itemIndex === -1) {
+      newDisabledItems = [].concat(disabledItems);
+      newDisabledItems.push(id);
+      this.setState({
+        disabledItems: newDisabledItems
+      });
+    } else if(operation === 'remove' && itemIndex > -1) {
+      newDisabledItems = [].concat(disabledItems);
+      newDisabledItems.splice(itemIndex, 1);
+      this.setState({
+        disabledItems: newDisabledItems
+      });
+    }
+  }
+
   applySelectAllCallback = selectAll => {
-    const { itemsDataList } = this.state;
+    const { itemsDataList, disabledItems } = this.state;
     const newItemsDataList = itemsDataList.map(item => {
+      if(disabledItems.indexOf(item.id) > -1) {
+        return item;
+      }
       item.selected = selectAll;
       return item;
     });
@@ -101,7 +125,7 @@ export default class List extends Component {
     });
   }
 
-  handleListItemCheckbox = (selected, id) => {
+  applyListItemCheckbox = (selected, id) => {
     const { itemsDataList } = this.state;
     const newItemsDataList = itemsDataList.map(item => {
       if (item.id === id) {
@@ -158,7 +182,7 @@ export default class List extends Component {
       <Container>
         <Row style={styles.searchRow}>
           <Col md={3}>
-            <SearchInput search={search} list={itemsDataList} searchCallback={this.updateListWithSearchResults} />
+            <SearchInput search={search} list={itemsDataList} searchCallback={this.applyListWithSearchResults} />
           </Col>
         </Row>
         <Row style={styles.sortBar}>

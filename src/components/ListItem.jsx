@@ -28,6 +28,7 @@ export default class ListItem extends Component {
 
   handleEdit = event => {
     const { name, value } = event.target;
+    const { itemData, updateDisabledItems } = this.props;
     let newState = {};
 
     if (name === 'currentPrice') {
@@ -36,6 +37,12 @@ export default class ListItem extends Component {
       newState[name] = parseInt(value, 10);
     } else {
       newState[name] = value;
+    }
+    
+    if(value.length === 0) {
+      updateDisabledItems(itemData.id);
+    } else {
+      updateDisabledItems(itemData.id, 'remove')
     }
 
     this.setState(newState);
