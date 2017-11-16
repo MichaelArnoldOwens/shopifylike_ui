@@ -21,7 +21,8 @@ export default class List extends Component {
       currentPage: 1,
       search: false, // search cb will change this to be a filtered list of itemData
       itemsDataList: mockDataList,
-      sortedList: false
+      sortedList: false,
+      selectAll: false
     }
   }
 
@@ -34,7 +35,7 @@ export default class List extends Component {
     });
   }
 
-  // Filter
+  // Sorting
   applySort = sortedList => {
     // SortBar will get either the original product list or search results
     this.setState({
@@ -44,11 +45,10 @@ export default class List extends Component {
 
   // Displaying Item Rows
   createListItems = () => {
-    const { displayItems, currentPage, search, itemsDataList, sortedList } = this.state;
+    const { displayItems, currentPage, search, itemsDataList, sortedList, selectAll } = this.state;
     let result = [];
+
     // sortedList > search > itemsDataList
-    // check for sortedList here
-    // const list = search ? search : itemsDataList;
     const list = sortedList ? sortedList : (search ? search : itemsDataList);
 
     // TODO: Test for edge case if at the end of the list
@@ -56,7 +56,7 @@ export default class List extends Component {
     const truncatedList = list.slice(startIndex);
     const limit = displayItems < truncatedList.length ? displayItems : truncatedList.length; // in the case that we have less or more items than the limit
     for (let i = 0; i < limit; i++) {
-      result.push(<ListItem itemData={truncatedList[i]} />);
+      result.push(<ListItem itemData={truncatedList[i]} selectAll={selectAll}/>);
     }
 
     return result;
@@ -95,6 +95,11 @@ export default class List extends Component {
     );
   }
 
+  // Editing
+  selectAllCallback = selectAll => {
+    this.setState({selectAll});
+  }
+
   // TODO: fix styling on input field on focus
   // TODO: Expand search box on focus
   render() {
@@ -114,7 +119,7 @@ export default class List extends Component {
           </Col>
         </Row>
         <Row style={styles.sortBar}>
-          <SortBar list={list} sortCallback={this.applySort} />
+          <SortBar list={list} sortCallback={this.applySort} selectAllCallback={this.selectAllCallback}/>
         </Row>
         { this.createListItems() }
         <Row style={styles.paginationRow}>

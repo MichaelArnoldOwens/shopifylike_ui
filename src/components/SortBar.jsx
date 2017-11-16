@@ -9,7 +9,8 @@ export default class SortBar extends Component {
       name: 0,
       type: 0,
       price: 0,
-      inventory: 0
+      inventory: 0,
+      selectAll: false
     }
   }
 
@@ -199,6 +200,13 @@ export default class SortBar extends Component {
     }
   }
 
+  handleSelectAll = () => {
+    const { selectAllCallback } = this.props;
+    const { selectAll } = this.state;
+    selectAllCallback(!selectAll);
+    this.setState({selectAll: !selectAll});
+  }
+
   render() {
     const { textAlignRightColumn } = styles;
     const { name, type, price, inventory } = this.state;
@@ -206,13 +214,13 @@ export default class SortBar extends Component {
     return (
       <Container>
         <Row>
-          <Col md={1} style={styles.sortBarCheckbox} >
+          <Col md={1} style={styles.sortBarCheckbox} onChange={this.handleSelectAll}>
             <input type="checkbox" />
           </Col>
-          <Col md={6} onClick={this.sortByName}> Name <i class="fa fa-angle-down" aria-hidden="true"></i> </Col>
-          <Col md={2} onClick={this.sortByType}> Type <i class="fa fa-angle-down" aria-hidden="true"></i> </Col>
-          <Col md={1} onClick={this.sortByPrice} style={textAlignRightColumn}> Price <i class="fa fa-angle-down" aria-hidden="true"></i> </Col>
-          <Col md={2} onClick={this.sortByInventory} style={textAlignRightColumn}> Inventory <i class="fa fa-angle-down" aria-hidden="true"></i></Col>
+          <Col md={6} onClick={this.sortByName}> Name <i className="fa fa-angle-down" aria-hidden="true"></i> </Col>
+          <Col md={2} onClick={this.sortByType}> Type <i className="fa fa-angle-down" aria-hidden="true"></i> </Col>
+          <Col md={1} onClick={this.sortByPrice} style={textAlignRightColumn}> Price <i className="fa fa-angle-down" aria-hidden="true"></i> </Col>
+          <Col md={2} onClick={this.sortByInventory} style={textAlignRightColumn}> Inventory <i className="fa fa-angle-down" aria-hidden="true"></i></Col>
         </Row>
       </Container>
     );
@@ -227,6 +235,3 @@ const styles = {
     textAlign: 'right'
   }
 }
-
-
-// apply search then filters
