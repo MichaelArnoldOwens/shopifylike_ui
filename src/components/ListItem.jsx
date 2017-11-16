@@ -30,18 +30,9 @@ export default class ListItem extends Component {
 
   handleEdit = event => {
     const { name, value } = event.target;
-    console.log('handleEdit name value: ', name, value)
     let newState = {};
     newState[name] = value;
     this.setState(newState);
-  }
-
-  isValidName = () => {
-    const { currentName } = this.state;
-    if(currentName.length === 0) {
-      return false;
-    }
-    return true;
   }
 
   isValidPrice = () => {
@@ -69,20 +60,26 @@ export default class ListItem extends Component {
     const { currentName, currentType, currentPrice, currentInventory } = this.state;
     const { selectedRowEntry, rowEntry, itemThumbnail, itemNameColumn, textAlignRightColumn, zeroInventory, editModePrice, editModeInventory, invalidInput } = styles;
     const rowStyle = selected ? selectedRowEntry : rowEntry;
-    let nameStyles = currentName.length === 0 ? invalidInput : {};
+    const inventoryColStyles = currentInventory > 0 ? textAlignRightColumn : Object.assign({}, textAlignRightColumn, zeroInventory);
     
-    let priceStyles = {};
-    let inventoryStyles = {};
-    inventoryStyles = currentInventory > 0 ? textAlignRightColumn : Object.assign(inventoryStyles, textAlignRightColumn, zeroInventory);
+    const nameStyles = currentName.length === 0 ? invalidInput : {};
+
+    const invalidPriceStyles = this.isValidPrice() ? false : true;
+    const priceStyles = invalidPriceStyles ? Object.assign({}, editModePrice, invalidInput) : editModePrice;
+
+    const invalidInventoryStyles = this.isValidInventory() ? false : true;
+    const inventoryStyles = invalidInventoryStyles ? Object.assign({}, editModeInventory, invalidInput) : editModeInventory;
+
 
     // if invalid current{prop}, then change border color to red and disable checkbox
+    const isDisabled = (!isEmpty(nameStyles) || invalidPriceStyles || invalidInventoryStyles);
 
     // TODO: add trailing zero to price when needed
     // Edit mode
     if (selected) {
       return (
         <Row key={itemData.id} style={rowStyle}>
-          <Col md={1} style={textAlignRightColumn}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} disabled={!isEmpty(nameStyles)}/> </Col>
+          <Col md={1} style={textAlignRightColumn}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} disabled={isDisabled}/> </Col>
           <Col md={1}> <img src={thumbnail} alt={currentName} style={itemThumbnail} /> </Col>
           <Col md={5} style={itemNameColumn}> <input type="text" style={nameStyles} value={currentName} onChange={this.handleEdit} name="currentName" /> </Col>
           <Col md={2}>
@@ -92,8 +89,8 @@ export default class ListItem extends Component {
               <option value='super physical'>super physical</option>
             </select>
           </Col>
-          <Col md={1} style={textAlignRightColumn}> <input style={editModePrice} type="number" value={currentPrice} onChange={this.handleEdit} name="currentPrice" /> </Col>
-          <Col md={2} style={inventoryStyles}> <input style={editModeInventory} type="number" value={currentInventory} onChange={this.handleEdit} name="currentInventory" /> </Col>
+          <Col md={1} style={textAlignRightColumn}> <input style={priceStyles} type="number" value={currentPrice} onChange={this.handleEdit} name="currentPrice" /> </Col>
+          <Col md={2} style={inventoryColStyles}> <input style={inventoryStyles} type="number" value={currentInventory} onChange={this.handleEdit} name="currentInventory" /> </Col>
         </Row>
       );
     }
@@ -105,7 +102,7 @@ export default class ListItem extends Component {
         <Col md={5} style={itemNameColumn}> {currentName} </Col>
         <Col md={2}> {currentType} </Col>
         <Col md={1} style={textAlignRightColumn}> ${currentPrice} </Col>
-        <Col md={2} style={inventoryStyles}> {currentInventory} </Col>
+        <Col md={2} style={inventoryColStyles}> {currentInventory} </Col>
       </Row>
     );
 
