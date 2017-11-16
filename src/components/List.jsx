@@ -175,13 +175,14 @@ export default class List extends Component {
     }
 
     return (
-      <select onChange={this.displayPage} defaultValue={currentPage}>
+      <select style={styles.paginationSelector} onChange={this.displayPage} defaultValue={currentPage}>
         {options}
       </select>
     );
   }
 
   render() {
+    const { searchRow, sortBar, paginationRow, paginationSelector, textAlignRight } = styles;
     const { displayItems, itemsDataList, search } = this.state;
     const list = search ? search : itemsDataList;
     const pages = list.length / displayItems;
@@ -189,29 +190,29 @@ export default class List extends Component {
 
     return (
       <Container>
-        <Row style={styles.searchRow}>
+        <Row style={searchRow}>
           <Col md={3}>
             <SearchInput search={search} list={itemsDataList} searchCallback={this.applyListWithSearchResults} />
           </Col>
         </Row>
-        <Row style={styles.sortBar}>
+        <Row style={sortBar}>
           <SortBar list={list} sortCallback={this.applySort} selectAllCallback={this.applySelectAllCallback} />
         </Row>
         {this.createListItems()}
-        <Row style={styles.paginationRow}>
+        <Row style={paginationRow}>
           <Col md={7}>
             <Col md={3}>
               Items per Page:
           </Col>
             <Col>
-              <select onChange={this.displayNItems} defaultValue="10">
+              <select style={paginationSelector} onChange={this.displayNItems} defaultValue="10">
                 <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="15">15</option>
               </select>
             </Col>
           </Col>
-          <Col md={5} style={styles.textAlignRightColumn}>
+          <Col md={5} style={textAlignRight}>
             {this.buildPageSelector(numberOfPages)}
           </Col>
         </Row>
@@ -232,10 +233,20 @@ const styles = {
     backgroundColor: 'white',
     marginBottom: 20
   },
-  textAlignRightColumn: {
+  textAlignRight: {
     textAlign: 'right'
   },
   paginationRow: {
     paddingTop: 10
+  },
+  paginationSelector: {
+    boxSizing: 'border-box',
+    color: '#666c70',
+    backgroundColor: '#fff',
+    border: '1px solid #c9cdcf',
+    borderRadius: 2,
+    height: 30,
+    paddingLeft: 10,
+    paddingRight: 28
   }
 }
