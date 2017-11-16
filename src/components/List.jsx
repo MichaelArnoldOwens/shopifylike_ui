@@ -58,7 +58,14 @@ export default class List extends Component {
     const limit = displayItems < truncatedList.length ? displayItems : truncatedList.length; // in the case that we have less or more items than the limit
 
     for (let i = 0; i < limit; i++) {
-      result.push(<ListItem key={truncatedList[i].id} itemData={truncatedList[i]} checkboxCallback={this.applyListItemCheckbox} selected={truncatedList[i].selected} updateItemData={this.applyUpdateItemData} updateDisabledItems={this.applyDisabledItems} />);
+      result.push(
+        <ListItem key={truncatedList[i].id}
+                  itemData={truncatedList[i]} 
+                  checkboxCallback={this.applyListItemCheckbox} 
+                  selected={truncatedList[i].selected} 
+                  updateItemData={this.applyUpdateItemData} 
+                  updateDisabledItems={this.applyDisabledItems} />
+      );
     }
 
     return result;
@@ -205,9 +212,7 @@ export default class List extends Component {
             </Col>
           </Col>
           <Col md={5} style={styles.textAlignRightColumn}>
-            {/* <button> <i class="fa fa-angle-left" aria-hidden="true"></i></button> */}
             {this.buildPageSelector(numberOfPages)}
-            {/* <button><i class="fa fa-angle-right" aria-hidden="true"></i></button> */}
           </Col>
         </Row>
       </Container>
