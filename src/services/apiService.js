@@ -36,7 +36,7 @@ export function createProduct(newProductObj) {
   }).then(function (response) {
     return response.json()
   }).then(function (json) {
-    console.log(json)
+    return json;
   }).catch(function (ex) {
     console.log('parsing failed', ex)
   });

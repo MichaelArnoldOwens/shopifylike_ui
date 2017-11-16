@@ -161,9 +161,6 @@ export default class List extends Component {
     const list = search ? search : itemsDataList;
     const pages = list.length / displayItems;
     const numberOfPages = list % displayItems !== 0 ? Math.floor(pages) + 1 : pages;
-    console.log(itemsDataList);
-    // Search will filter or override this array
-    // listItems = search ? createListItems(filtered itemArray) : createListItems(itemArray)
 
     return (
       <Container>
