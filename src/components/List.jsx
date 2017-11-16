@@ -4,27 +4,33 @@ import ListItem from './ListItem';
 import SortBar from './SortBar';
 import SearchInput from './SearchInput';
 import '../styles/List.css';
+import { getItems, updateProduct } from '../services/apiService';
 
 /*
 List will take the product data and create instances of ProductItem components
 List will have search to filter through the product data
 List will have SortBar
 List will set number of items visible
+TODO: Change itemsDataList to dictionary
 */
 
 export default class List extends Component {
+  state = {
+    displayItems: 10,
+    currentPage: 1,
+    search: false,
+    sortedList: false,
+    itemsDataList: [],
+    selectAll: false,
+    selectedList: []
+  }
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      displayItems: 10,
-      currentPage: 1,
-      search: false, // search cb will change this to be a filtered list of itemData
-      itemsDataList: mockDataList,
-      sortedList: false,
-      selectAll: false,
-      selectedList: []
-    }
+  componentWillMount() {
+    getItems().then(response => {
+      this.setState({
+        itemsDataList: response
+      });
+    });
   }
 
   // Search
@@ -56,7 +62,7 @@ export default class List extends Component {
     const truncatedList = list.slice(startIndex);
     const limit = displayItems < truncatedList.length ? displayItems : truncatedList.length; // in the case that we have less or more items than the limit
     for (let i = 0; i < limit; i++) {
-      result.push(<ListItem key={truncatedList[i].id} itemData={truncatedList[i]} checkboxCallback={this.handleListItemCheckbox} selected={truncatedList[i].selected} />);
+      result.push(<ListItem key={truncatedList[i].id} itemData={truncatedList[i]} checkboxCallback={this.handleListItemCheckbox} selected={truncatedList[i].selected} updateItemData={this.applyUpdateItemData} />);
     }
     return result;
   }
@@ -107,6 +113,32 @@ export default class List extends Component {
     });
   }
 
+  applyUpdateItemData = (newItemData, id) => {
+    const { itemsDataList } = this.state;
+    const { currentName, currentInventory, currentPrice, currentType } = newItemData;
+    let updateItem = {};
+    const newItemsDataList = itemsDataList.map(item => {
+      if (item.id === id) {
+        item.name = currentName;
+        item.inventory = currentInventory;
+        item.price = currentPrice;
+        item.type = currentType;
+        updateItem.name = currentName;
+        updateItem.inventory = currentInventory;
+        updateItem.price = currentPrice;
+        // Not passing the 'type' because the API will not update it
+      }
+      return item;
+    });
+
+    updateProduct(id, updateItem).then(response => {
+      this.setState((previousState, currentProps) => { // there is a race condition here - solution is to loop through items again and find the item with the matching id and replace it
+        return { ...previousState, itemsDataList: newItemsDataList };
+      });
+    });
+  }
+
+
   handleListItemCheckbox = (selected, id) => {
     const { itemsDataList } = this.state;
     const newItemsDataList = itemsDataList.map(item => {
@@ -129,7 +161,7 @@ export default class List extends Component {
     const list = search ? search : itemsDataList;
     const pages = list.length / displayItems;
     const numberOfPages = list % displayItems !== 0 ? Math.floor(pages) + 1 : pages;
-
+    console.log(itemsDataList);
     // Search will filter or override this array
     // listItems = search ? createListItems(filtered itemArray) : createListItems(itemArray)
 

@@ -13,16 +13,19 @@ export default class ListItem extends Component {
     const { name, type, price, inventory } = itemData;
     const selected = false;
     this.state = {
-      name,
-      type,
-      price,
-      inventory
+      currentName: name,
+      currentType: type,
+      currentPrice: price,
+      currentInventory: inventory
     };
   }
 
   handleCheckbox = event => {
-    const { selected, checkboxCallback, itemData } = this.props;
+    const { selected, checkboxCallback, updateItemData, itemData } = this.props;
     checkboxCallback(!selected, itemData.id);
+    if(selected) {
+      updateItemData(this.state, itemData.id);
+    }
   }
 
   handleEdit = event => {
@@ -42,13 +45,11 @@ export default class ListItem extends Component {
   render() {
     const { selected, itemData } = this.props;
     const { thumbnail } = itemData;
-    const { name, type, price, inventory } = this.state;
+    const { currentName, currentType, currentPrice, currentInventory } = this.state;
     const { selectedRowEntry, rowEntry, itemThumbnail, itemNameColumn, textAlignRightColumn, zeroInventory, editModePrice, editModeInventory } = styles;
     const rowStyle = selected ? selectedRowEntry : rowEntry;
     let inventoryStyles = {};
-    inventoryStyles = inventory > 0 ? textAlignRightColumn : Object.assign(inventoryStyles, textAlignRightColumn, zeroInventory);
-
-    console.log('selected: ', selected);
+    inventoryStyles = currentInventory > 0 ? textAlignRightColumn : Object.assign(inventoryStyles, textAlignRightColumn, zeroInventory);
     
     // TODO: add trailing zero to price when needed
     // Edit mode
@@ -57,16 +58,16 @@ export default class ListItem extends Component {
         <Row key={itemData.id} style={rowStyle}>
           <Col md={1} style={textAlignRightColumn}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} /> </Col>
           <Col md={1}> <img src={thumbnail} style={itemThumbnail} /> </Col>
-          <Col md={5} style={itemNameColumn}> <input type="text" value={name} onChange={this.handleEdit} name="name" /> </Col>
+          <Col md={5} style={itemNameColumn}> <input type="text" value={currentName} onChange={this.handleEdit} name="currentName" /> </Col>
           <Col md={2}>
-            <select name="type" onChange={this.handleEdit} defaultValue={type}>
-              <option value={type}>{type}</option>
+            <select name="currentType" onChange={this.handleEdit} defaultValue={currentType}>
+              <option value={currentType}>{currentType}</option>
               <option value='meta physical'>metaphysical</option>
               <option value='super physical'>super physical</option>
             </select>
           </Col>
-          <Col md={1} style={textAlignRightColumn}> <input style={editModePrice} type="number" value={price} onChange={this.handleEdit} name="price" /> </Col>
-          <Col md={2} style={inventoryStyles}> <input style={editModeInventory} type="number" value={inventory} onChange={this.handleEdit} name="inventory" /> </Col>
+          <Col md={1} style={textAlignRightColumn}> <input style={editModePrice} type="number" value={currentPrice} onChange={this.handleEdit} name="currentPrice" /> </Col>
+          <Col md={2} style={inventoryStyles}> <input style={editModeInventory} type="number" value={currentInventory} onChange={this.handleEdit} name="currentInventory" /> </Col>
         </Row>
       );
     }
@@ -75,10 +76,10 @@ export default class ListItem extends Component {
       <Row style={rowStyle}>
         <Col md={1} style={textAlignRightColumn}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} /> </Col>
         <Col md={1}> <img src={thumbnail} style={itemThumbnail} /> </Col>
-        <Col md={5} style={itemNameColumn}> {name} </Col>
-        <Col md={2}> {type} </Col>
-        <Col md={1} style={textAlignRightColumn}> ${price} </Col>
-        <Col md={2} style={inventoryStyles}> {inventory} </Col>
+        <Col md={5} style={itemNameColumn}> {currentName} </Col>
+        <Col md={2}> {currentType} </Col>
+        <Col md={1} style={textAlignRightColumn}> ${currentPrice} </Col>
+        <Col md={2} style={inventoryStyles}> {currentInventory} </Col>
       </Row>
     );
 
