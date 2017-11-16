@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col } from 'reactstrap';
+import { isEmpty } from 'lodash';
 import '../styles/ListItem.css';
 
 /**
@@ -11,7 +12,6 @@ export default class ListItem extends Component {
     super(props);
     const { itemData } = this.props;
     const { name, type, price, inventory } = itemData;
-    const selected = false;
     this.state = {
       currentName: name,
       currentType: type,
@@ -23,42 +23,68 @@ export default class ListItem extends Component {
   handleCheckbox = event => {
     const { selected, checkboxCallback, updateItemData, itemData } = this.props;
     checkboxCallback(!selected, itemData.id);
-    if(selected) {
+    if (selected) {
       updateItemData(this.state, itemData.id);
     }
   }
 
   handleEdit = event => {
-    // TODO:
-    // send post request to update the entry
-    // trigger callback to update the parent list
     const { name, value } = event.target;
-    if(value === '') {
-      event.preventDefault()
-    } else {
-      let newState = {};
-      newState[name] = value;
-      this.setState(newState);
+    console.log('handleEdit name value: ', name, value)
+    let newState = {};
+    newState[name] = value;
+    this.setState(newState);
+  }
+
+  isValidName = () => {
+    const { currentName } = this.state;
+    if(currentName.length === 0) {
+      return false;
     }
+    return true;
+  }
+
+  isValidPrice = () => {
+    const { currentPrice } = this.state;
+    const regex = /\d+(\.\d{1,2})?$/;
+    if(regex.test(currentPrice)) {
+      return true;
+    }
+    return false;
+  }
+
+  isValidInventory = () => {
+    const { currentInventory } = this.state;
+    // checks for integer
+    const regex = /^[1-9]\d*$/;
+    if(regex.test(currentInventory)) {
+      return true;
+    }
+    return false;
   }
 
   render() {
     const { selected, itemData } = this.props;
     const { thumbnail } = itemData;
     const { currentName, currentType, currentPrice, currentInventory } = this.state;
-    const { selectedRowEntry, rowEntry, itemThumbnail, itemNameColumn, textAlignRightColumn, zeroInventory, editModePrice, editModeInventory } = styles;
+    const { selectedRowEntry, rowEntry, itemThumbnail, itemNameColumn, textAlignRightColumn, zeroInventory, editModePrice, editModeInventory, invalidInput } = styles;
     const rowStyle = selected ? selectedRowEntry : rowEntry;
+    let nameStyles = currentName.length === 0 ? invalidInput : {};
+    
+    let priceStyles = {};
     let inventoryStyles = {};
     inventoryStyles = currentInventory > 0 ? textAlignRightColumn : Object.assign(inventoryStyles, textAlignRightColumn, zeroInventory);
-    
+
+    // if invalid current{prop}, then change border color to red and disable checkbox
+
     // TODO: add trailing zero to price when needed
     // Edit mode
     if (selected) {
       return (
         <Row key={itemData.id} style={rowStyle}>
-          <Col md={1} style={textAlignRightColumn}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} /> </Col>
-          <Col md={1}> <img src={thumbnail} style={itemThumbnail} /> </Col>
-          <Col md={5} style={itemNameColumn}> <input type="text" value={currentName} onChange={this.handleEdit} name="currentName" /> </Col>
+          <Col md={1} style={textAlignRightColumn}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} disabled={!isEmpty(nameStyles)}/> </Col>
+          <Col md={1}> <img src={thumbnail} alt={currentName} style={itemThumbnail} /> </Col>
+          <Col md={5} style={itemNameColumn}> <input type="text" style={nameStyles} value={currentName} onChange={this.handleEdit} name="currentName" /> </Col>
           <Col md={2}>
             <select name="currentType" onChange={this.handleEdit} defaultValue={currentType}>
               <option value={currentType}>{currentType}</option>
@@ -75,7 +101,7 @@ export default class ListItem extends Component {
     return (
       <Row style={rowStyle}>
         <Col md={1} style={textAlignRightColumn}> <input type="checkbox" onChange={this.handleCheckbox} checked={selected} /> </Col>
-        <Col md={1}> <img src={thumbnail} style={itemThumbnail} /> </Col>
+        <Col md={1}> <img src={thumbnail} alt={currentName} style={itemThumbnail} /> </Col>
         <Col md={5} style={itemNameColumn}> {currentName} </Col>
         <Col md={2}> {currentType} </Col>
         <Col md={1} style={textAlignRightColumn}> ${currentPrice} </Col>
@@ -121,5 +147,8 @@ const styles = {
   },
   editModeInventory: {
     width: 50
+  },
+  invalidInput: {
+    borderColor: 'red'
   }
 }

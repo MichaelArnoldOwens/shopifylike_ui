@@ -51,7 +51,7 @@ export default class List extends Component {
 
   // Displaying Item Rows
   createListItems = () => {
-    const { displayItems, currentPage, search, itemsDataList, sortedList, selectAll, selectedList } = this.state;
+    const { displayItems, currentPage, search, itemsDataList, sortedList } = this.state;
     let result = [];
 
     // sortedList > search > itemsDataList
@@ -156,7 +156,6 @@ export default class List extends Component {
   // TODO: fix styling on input field on focus
   // TODO: Expand search box on focus
   render() {
-    const { items } = this.props;
     const { displayItems, itemsDataList, search, selectAll } = this.state;
     const list = search ? search : itemsDataList;
     const pages = list.length / displayItems;

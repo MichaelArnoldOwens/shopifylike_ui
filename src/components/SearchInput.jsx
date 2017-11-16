@@ -29,7 +29,7 @@ export default class SearchInput extends Component {
 
       const priceSearchFlag = isValidPriceInput(value, isFirstCharDollarSymbol);
       
-      list.map(item => {
+      list.forEach(item => {
         if (priceSearchFlag) {
           const priceValue = isFirstCharDollarSymbol ? value.slice(1) : value;
           if (parseFloat(priceValue, 10) === item.price) {

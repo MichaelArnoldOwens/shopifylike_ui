@@ -208,6 +208,7 @@ export default class SortBar extends Component {
     this.setState({ selectAll: !selectAll });
   }
 
+  // TODO: uncheck selectAll if no items are selected
   render() {
     const { textAlignRightColumn } = styles;
     const { selectAll } = this.state;
