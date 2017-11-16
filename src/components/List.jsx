@@ -22,7 +22,8 @@ export default class List extends Component {
       search: false, // search cb will change this to be a filtered list of itemData
       itemsDataList: mockDataList,
       sortedList: false,
-      selectAll: false
+      selectAll: false,
+      selectedList: []
     }
   }
 
@@ -37,15 +38,14 @@ export default class List extends Component {
 
   // Sorting
   applySort = sortedList => {
-    // SortBar will get either the original product list or search results
     this.setState({
-      sortedList: sortedList
+      sortedList
     });
   }
 
   // Displaying Item Rows
   createListItems = () => {
-    const { displayItems, currentPage, search, itemsDataList, sortedList, selectAll } = this.state;
+    const { displayItems, currentPage, search, itemsDataList, sortedList, selectAll, selectedList } = this.state;
     let result = [];
 
     // sortedList > search > itemsDataList
@@ -56,9 +56,8 @@ export default class List extends Component {
     const truncatedList = list.slice(startIndex);
     const limit = displayItems < truncatedList.length ? displayItems : truncatedList.length; // in the case that we have less or more items than the limit
     for (let i = 0; i < limit; i++) {
-      result.push(<ListItem itemData={truncatedList[i]} selectAll={selectAll}/>);
+      result.push(<ListItem key={truncatedList[i].id} itemData={truncatedList[i]} checkboxCallback={this.handleListItemCheckbox} selected={truncatedList[i].selected} />);
     }
-
     return result;
   }
 
@@ -97,13 +96,36 @@ export default class List extends Component {
 
   // Editing
   selectAllCallback = selectAll => {
-    this.setState({selectAll});
+    const { itemsDataList } = this.state;
+    const newItemsDataList = itemsDataList.map(item => {
+      item.selected = selectAll;
+      return item;
+    });
+
+    this.setState({
+      itemsDataList: newItemsDataList
+    });
+  }
+
+  handleListItemCheckbox = (selected, id) => {
+    const { itemsDataList } = this.state;
+    const newItemsDataList = itemsDataList.map(item => {
+      if (item.id === id) {
+        item.selected = selected;
+      }
+      return item;
+    });
+
+    this.setState({
+      itemsDataList: newItemsDataList
+    });
   }
 
   // TODO: fix styling on input field on focus
   // TODO: Expand search box on focus
   render() {
-    const { displayItems, itemsDataList, search } = this.state;
+    const { items } = this.props;
+    const { displayItems, itemsDataList, search, selectAll } = this.state;
     const list = search ? search : itemsDataList;
     const pages = list.length / displayItems;
     const numberOfPages = list % displayItems !== 0 ? Math.floor(pages) + 1 : pages;
@@ -119,9 +141,9 @@ export default class List extends Component {
           </Col>
         </Row>
         <Row style={styles.sortBar}>
-          <SortBar list={list} sortCallback={this.applySort} selectAllCallback={this.selectAllCallback}/>
+          <SortBar list={list} sortCallback={this.applySort} selectAllCallback={this.selectAllCallback} selectAll={selectAll} />
         </Row>
-        { this.createListItems() }
+        {this.createListItems()}
         <Row style={styles.paginationRow}>
           <Col md={7}>
             <Col md={3}>
@@ -265,7 +287,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/11708126.png"
   },
   {
-    "id": 1,
+    "id": 13,
     "name": "Snapback Hat",
     "type": "Physical",
     "price": 20.99,
@@ -273,7 +295,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/diamond-supply-co-brilliant-snapback-hat-224298.png"
   },
   {
-    "id": 2,
+    "id": 14,
     "name": "Maxi Dress - Floral",
     "type": "Physical",
     "price": 40,
@@ -281,7 +303,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
   },
   {
-    "id": 3,
+    "id": 15,
     "name": "Maxi Dress - Vibrant",
     "type": "Physical",
     "price": 40,
@@ -289,7 +311,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
   },
   {
-    "id": 4,
+    "id": 16,
     "name": "High Waist Jeans",
     "type": "Physical",
     "price": 45.99,
@@ -297,7 +319,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/super-high-waisted-jeans-google-search-iozlcm0zk5j.png"
   },
   {
-    "id": 5,
+    "id": 17,
     "name": "Grey Silk Blouse",
     "type": "Physical",
     "price": 35,
@@ -305,7 +327,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/6646dc1ab684f84f67a60dab5ebcb7d7.png"
   },
   {
-    "id": 6,
+    "id": 18,
     "name": "White Silk Blouse",
     "type": "Physical",
     "price": 35,
@@ -313,7 +335,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/url.png"
   },
   {
-    "id": 7,
+    "id": 19,
     "name": "Ribbed V-Neck Sweater",
     "type": "Physical",
     "price": 52.5,
@@ -321,7 +343,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/11718685.png"
   },
   {
-    "id": 8,
+    "id": 20,
     "name": "Ribbed Crew Neck Sweater",
     "type": "Physical",
     "price": 52.5,
@@ -329,7 +351,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/goods-185120-sub3.png"
   },
   {
-    "id": 9,
+    "id": 21,
     "name": "Boat Neck Tee",
     "type": "Physical",
     "price": 25.8,
@@ -337,7 +359,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/imageservice.png"
   },
   {
-    "id": 10,
+    "id": 22,
     "name": "Striped Crew Neck Tee",
     "type": "Physical",
     "price": 27.15,
@@ -345,7 +367,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/img-thing.png"
   },
   {
-    "id": 11,
+    "id": 23,
     "name": "Floral Striped Button Down Shirt",
     "type": "Physical",
     "price": 50.99,
@@ -353,7 +375,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/img-thing.png"
   },
   {
-    "id": 12,
+    "id": 24,
     "name": "Denim Jacket",
     "type": "Physical",
     "price": 80.8,
@@ -361,7 +383,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/11708126.png"
   },
   {
-    "id": 2,
+    "id": 25,
     "name": "Maxi Dress - Floral",
     "type": "Physical",
     "price": 40,
@@ -369,7 +391,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
   },
   {
-    "id": 2,
+    "id": 26,
     "name": "Maxi Dress - Floral",
     "type": "Physical",
     "price": 40,
@@ -377,7 +399,7 @@ const mockDataList = [
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/27890e0eddd8e800fc2c8fc1c434744d.png"
   },
   {
-    "id": 2,
+    "id": 27,
     "name": "Maxi Dress - Floral",
     "type": "ZPhysical",
     "price": 40,

@@ -14,6 +14,7 @@ export default class SortBar extends Component {
     }
   }
 
+  // TODO: refactor these
   sortByName = () => {
     const nameAlphabeticalSort = (a, b) => {
       const nameA = a.name.toUpperCase();
@@ -204,18 +205,18 @@ export default class SortBar extends Component {
     const { selectAllCallback } = this.props;
     const { selectAll } = this.state;
     selectAllCallback(!selectAll);
-    this.setState({selectAll: !selectAll});
+    this.setState({ selectAll: !selectAll });
   }
 
   render() {
     const { textAlignRightColumn } = styles;
-    const { name, type, price, inventory } = this.state;
+    const { selectAll } = this.state;
 
     return (
       <Container>
         <Row>
-          <Col md={1} style={styles.sortBarCheckbox} onChange={this.handleSelectAll}>
-            <input type="checkbox" />
+          <Col md={1} style={styles.sortBarCheckbox} >
+            <input type="checkbox" onChange={this.handleSelectAll} checked={selectAll} />
           </Col>
           <Col md={6} onClick={this.sortByName}> Name <i className="fa fa-angle-down" aria-hidden="true"></i> </Col>
           <Col md={2} onClick={this.sortByType}> Type <i className="fa fa-angle-down" aria-hidden="true"></i> </Col>

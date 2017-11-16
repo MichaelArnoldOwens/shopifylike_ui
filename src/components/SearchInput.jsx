@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from 'reactstrap';
+import { Col } from 'reactstrap';
+import { isValidPriceInput } from '../services/validationService';
 
 export default class SearchInput extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   /*
   {
     "id": 1,
@@ -16,16 +13,6 @@ export default class SearchInput extends Component {
     "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/diamond-supply-co-brilliant-snapback-hat-224298.png"
   }
   */
-
-  isValidPriceInput(value, isFirstCharDollarSymbol) {
-    if (isFirstCharDollarSymbol || !isNaN(parseFloat(value.charAt(0), 10))) {
-      const currencyAmount = isFirstCharDollarSymbol ? value.slice(0) : value;
-      const regex = /^\$?[0-9]+\.?[0-9]?[0-9]?$/; // check if valid currency input
-      if (regex.test(currencyAmount))
-        return true;
-    }
-    return false;
-  }
 
   handleSearch = event => {
     const { search, list, searchCallback } = this.props;
@@ -40,7 +27,7 @@ export default class SearchInput extends Component {
         return searchCallback(list);
       }
 
-      const priceSearchFlag = this.isValidPriceInput(value, isFirstCharDollarSymbol);
+      const priceSearchFlag = isValidPriceInput(value, isFirstCharDollarSymbol);
       
       list.map(item => {
         if (priceSearchFlag) {
