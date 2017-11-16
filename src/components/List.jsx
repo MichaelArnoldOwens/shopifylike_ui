@@ -143,13 +143,15 @@ export default class List extends Component {
   displayNItems = event => {
     this.setState({
       displayItems: parseInt(event.target.value, 10),
-      currentPage: 1
+      currentPage: 1,
+      disabledItems: []
     });
   }
 
   displayPage = event => {
     this.setState({
-      currentPage: parseInt(event.target.value, 10)
+      currentPage: parseInt(event.target.value, 10),
+      disabledItems: []
     });
   }
 
